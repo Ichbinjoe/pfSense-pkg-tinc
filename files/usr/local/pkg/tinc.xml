@@ -80,20 +80,20 @@
 			<fieldname>name</fieldname>
 			<description>
 				<![CDATA[
-				This is the name which identifies this tinc daemon.<br />
-				It must be unique for the virtual private network this daemon will connect to.
+				This is the name which identifies this tinc network.<br />
 				]]>
 			</description>
 			<type>input</type>
 			<required/>
 		</field>
 		<field>
-			<fielddescr>Local IP</fielddescr>
-			<fieldname>localip</fieldname>
+			<fielddescr>Host Name</fielddescr>
+			<fieldname>hostname</fieldname>
 			<description>
 				<![CDATA[
-				IP address of local tunnel interface.<br />
-				This is often the same IP as your routers LAN address. (Example: 192.168.2.1)
+				This is the name which identifies this tinc daemon.<br />
+				It must be unique for the virtual private network this daemon will connect to.<br />
+				This is NOT an IP or domain name! It is an identifier.
 				]]>
 			</description>
 			<type>input</type>
@@ -108,7 +108,24 @@
 				This is usually your LAN subnet. (Example: 192.168.2.0/24)
 				]]>
 			</description>
-			<type>input</type>
+			<type>textarea</type>
+			<encoding>base64</encoding>
+			<rows>7</rows>
+			<cols>50</cols>
+		</field>
+		<field>
+			<fielddescr>Local IPs</fielddescr>
+			<fieldname>localip</fieldname>
+			<description>
+				<![CDATA[
+				IP address of local tunnel interface.<br />
+				Each individual address should be within the Local subnet
+				]]>
+			</description>
+			<type>textarea</type>
+			<encoding>base64</encoding>
+			<rows>7</rows>
+			<cols>70</cols>
 			<required/>
 		</field>
 		<field>

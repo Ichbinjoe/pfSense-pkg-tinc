@@ -73,15 +73,16 @@
 			<fieldname>address</fieldname>
 			<description>IP address or hostname of server.</description>
 			<type>input</type>
-			<required/>
 		</field>
 		<field>
 			<fielddescr>Subnet</fielddescr>
 			<fieldname>subnet</fieldname>
-			<description>Subnet behind host (like 192.168.254.0/24)</description>
-			<type>input</type>
-			<size>50</size>
-			<required/>
+			<description>Subnet behind host (like 192.168.254.0/24). Each on newline. May be empty if no traffic is
+				routed here - only leave empty if you know what you are doing!</description>
+            <type>textarea</type>
+            <encoding>base64</encoding>
+            <rows>7</rows>
+            <cols>50</cols>
 		</field>
 		<field>
 			<fielddescr>Connect at Startup</fielddescr>
