@@ -63,7 +63,7 @@ function tinc_save_host($host, $hostspath) {
     }
 
     $subnets = explode("\n", tinc_filter_r(base64_decode($host['subnet'])));
-    for ($subnets as $subnet) {
+    foreach ($subnets as $subnet) {
         if ($subnet) {
             $_output .= "Subnet=" . $subnet . "\n";
         }
@@ -169,15 +169,15 @@ function tinc_save() {
 	safe_mkdir("{$configpath}");
 
 
-    for ($i = 0; i < sizeof($config['installedpackages']['tinc']['config']); $i++) {
+    for ($i = 0; $i < sizeof($config['installedpackages']['tinc']['config']); $i++) {
         if ($config['installedpackages']['tinc']['config'][$i]['gen_rsa']) {
             safe_mkdir("{$configpath}/tmp");
             exec("/usr/local/sbin/tincd -c {$configpath}/tmp -K");
             $tincconf['cert_pub'] = base64_encode(file_get_contents("{$configpath}/tmp/rsa_key.pub"));
             $tincconf['cert_key'] = base64_encode(file_get_contents("{$configpath}/tmp/rsa_key.priv"));
 
-            $config['installedpackages']['tinc']['config'][$i]['cert_pub'] = base64_encode(file_get_contents("{$configpath}/tmp/rsa_key.pub"))
-            $config['installedpackages']['tinc']['config'][$i]['cert_key'] = base64_encode(file_get_contents("{$configpath}/tmp/rsa_key.priv"))
+            $config['installedpackages']['tinc']['config'][$i]['cert_pub'] = base64_encode(file_get_contents("{$configpath}/tmp/rsa_key.pub"));
+            $config['installedpackages']['tinc']['config'][$i]['cert_key'] = base64_encode(file_get_contents("{$configpath}/tmp/rsa_key.priv"));
             $config['installedpackages']['tinc']['config'][$i]['gen_rsa'] = false;
 
             rmdir_recursive("{$configpath}/tmp");
@@ -200,7 +200,9 @@ function tinc_save() {
     $should_run = false;
 
     if ($tincconf['enable'] != "") {
+    	print "HELP!";
         tinc_save_network($tincconf, $configpath);
+        $should_run = true;
     }
 
 	if ($should_run) {
@@ -254,38 +256,11 @@ function tinc_install() {
 	}
 	if (!$found) {
 		$ifgroupentry = array();
-		$ifgroupentry['members'] = '';	if ($tincconf['tinc_up']) {
-		$_output = base64_decode($tincconf['tinc_up']) . "\n";
-	} else {
-		$_output = "ifconfig \$INTERFACE " . $tincconf['localip'] . " netmask " . $tincconf['vpnnetmask'] . "\n";
-		$_output .= "ifconfig \$INTERFACE group pkg_tinc\n";
-	}
-	file_put_contents("{$configpath}/tinc-up", $_output);
-	chmod("{$configpath}/tinc-up", 0744);
-	if ($tincconf['tinc_down']) {
-		file_put_contents("{$configpath}/tinc-down", str_replace("\r", "", base64_decode($tincconf['tinc_down'])) . "\n");
-		chmod("{$configpath}/tinc-down", 0744);
-	}
-	if ($tincconf['host_up']) {
-		file_put_contents("{$configpath}/host-up", str_replace("\r", "", base64_decode($tincconf['host_up'])) . "\n");
-		chmod("{$configpath}/host-up", 0744);
-	}
-	if ($tincconf['host_down']) {
-		file_put_contents("{$configpath}/host-down", str_replace("\r", "", base64_decode($tincconf['host_down'])) . "\n");
-		chmod("{$configpath}/host-down", 0744);
-	}
-	if ($tincconf['subnet_up']) {
-		file_put_contents("{$configpath}/subnet-up", str_replace("\r", "", base64_decode($tincconf['subnet_up'])) . "\n");
-		chmod("{$configpath}/subnet-up", 0744);
-	}
-	if ($tincconf['subnet_down']) {
-		file_put_contents("{$configpath}/subnet-down", str_replace("\r", "", base64_decode($tincconf['subnet_down'])) . "\n");
-		chmod("{$configpath}/subnet-down", 0744);
-	}
-		$ifgroupentry['descr'] = 'tinc mesh VPN interface group';
-		$ifgroupentry['ifname'] = 'pkg_tinc';
-		$a_ifgroups[] = $ifgroupentry;
-	}
+		$ifgroupentry['members'] = '';
+        $ifgroupentry['descr'] = 'tinc mesh VPN interface group';
+        $ifgroupentry['ifname'] = 'pkg_tinc';
+        $a_ifgroups[] = $ifgroupentry;
+    }
 
 	/*
 	 * XXX: Do not remove this, otherwise the interface group may not be added properly.

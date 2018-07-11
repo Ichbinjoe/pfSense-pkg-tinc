@@ -53,6 +53,7 @@
 		<columnitem>
 			<fielddescr>Subnet</fielddescr>
 			<fieldname>subnet</fieldname>
+			<encoding>base64</encoding>
 		</columnitem>
 		<columnitem>
 			<fielddescr>Connect at Startup</fielddescr>
