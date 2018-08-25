@@ -86,7 +86,7 @@ function tinc_save_host($host, $hostspath) {
 function tinc_save_network($tincconf, $configpath) {
     global $config; // TODO - remove / refactor
 
-    $confipath = $configpath . "/" . $tincconf['name'];
+    $configpath .= "/" . $tincconf['name'];
     safe_mkdir("{$configpath}");
     safe_mkdir("{$configpath}/hosts");
 
@@ -112,7 +112,7 @@ function tinc_save_network($tincconf, $configpath) {
     fclose($fout);
 
     $myhost = array(
-    	'name' => $tincconf['name'],
+    	'name' => $tincconf['hostname'],
     	'address' => '',
 		'subnet' => $tincconf['localsubnet'],
 		'extra' => $tincconf['extra'],
@@ -206,7 +206,7 @@ function tinc_save() {
     }
 
 	if ($should_run) {
-		tinc_write_rcfile();
+		tinc_write_rcfile($tincconf['name']);
 		if (is_service_running("tinc")) {
 			restart_service("tinc");
 		} else {
@@ -222,10 +222,10 @@ function tinc_save() {
 	conf_mount_ro();
 }
 
-function tinc_write_rcfile() {
+function tinc_write_rcfile($netname) {
 	$rc['file'] = 'tinc.sh';
-	$rc['start'] .= "/usr/local/sbin/tincd --config=/usr/local/etc/tinc\n\t";
-	$rc['stop'] .= "/usr/local/sbin/tincd --kill && sleep 2\n\t";
+	$rc['start'] .= "/usr/local/sbin/tincd --config=/usr/local/etc/tinc/{$netname}\n\t";
+	$rc['stop'] .= "/usr/local/sbin/tincd --kill || true\n\t";
 	write_rcfile($rc);
 }
 
