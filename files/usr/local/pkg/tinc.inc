@@ -90,10 +90,12 @@ function tinc_save_network($tincconf, $configpath) {
     safe_mkdir("{$configpath}");
     safe_mkdir("{$configpath}/hosts");
 
+    $ifacename = "tinc" . $tincconf['name'];
+
     $fout = fopen("{$configpath}/tinc.conf", "w");
     fwrite($fout, "Name=" . $tincconf['hostname'] . "\n");
     fwrite($fout, "AddressFamily=" . $tincconf['addressfamily'] . "\n");
-
+    fwrite($fout, "Interface=" . $ifacename . "\n");
 
     // TODO - Filter hosts by network
 
@@ -128,8 +130,10 @@ function tinc_save_network($tincconf, $configpath) {
         $_output = base64_decode($tincconf['tinc_up']) . "\n";
     } else {
         $locals = explode("\n", tinc_filter_r($tincconf['localip']));
+
+        $_output = "ifconfig \$INTERFACE name " . $ifacename;
         foreach ($locals as $local) {
-            $_output = "ifconfig \$INTERFACE " . $local . " netmask " . $tincconf['vpnnetmask'] . "\n";
+            $_output .= "ifconfig \$INTERFACE " . $local . " netmask " . $tincconf['vpnnetmask'] . "\n";
         }
         $_output .= "ifconfig \$INTERFACE group pkg_tinc\n";
     }
@@ -320,9 +324,6 @@ function tinc_validate_input($post, &$input_errors) {
 		if ((!is_ipaddr($post['address'])) && (!is_hostname($post['address']))) {
 			$input_errors[] = gettext("'Host Address' must be a valid IP address or hostname.");
 		}
-	}
-	if (($post['localsubnet']) && (!is_subnet($post['localsubnet']))) {
-		$input_errors[] = gettext("'Local Subnet' must be a valid subnet.");
 	}
 	if (($post['subnet']) && (!is_subnet($post['subnet']))) {
 		$input_errors[] = gettext("'Subnet' must be a valid subnet.");
